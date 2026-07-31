@@ -127,6 +127,15 @@ void wintitle_plugin_configure(XfcePanelPlugin *panel_plugin) {
 	gtk_widget_set_sensitive(widget, show_icon);
 	gtk_widget_set_sensitive(label, show_icon);
 
+	// expand
+	GtkWidget *expand_switch = gtk_switch_new();
+	gboolean expand =
+	    wintitle_plugin_bind_switch_value_to(GTK_SWITCH(expand_switch), G_OBJECT(plugin), "expand");
+	label = gtk_label_new("Expand");
+	gtk_label_set_xalign(GTK_LABEL(label), 0);
+	gtk_grid_attach(GTK_GRID(grid), label, 0, 4, 1, 1);
+	gtk_grid_attach(GTK_GRID(grid), expand_switch, 1, 4, 1, 1);
+
 	// add and show
 	gtk_container_add(GTK_CONTAINER(container), grid);
 	gtk_widget_show_all(dialog);
