@@ -82,9 +82,13 @@ static void wintitle_plugin_update_orientation(WintitlePlugin *plugin, GtkOrient
 		gtk_orientable_set_orientation(GTK_ORIENTABLE(plugin->box), orientation);
 		gtk_label_set_angle(GTK_LABEL(plugin->label), 270);
 	}
-	if (plugin->expand) {
-		gtk_label_set_justify(GTK_LABEL(plugin->label), GTK_JUSTIFY_CENTER);
-	}
+}
+
+static void wintitle_plugin_update_expand(WintitlePlugin *plugin) {
+	xfce_panel_plugin_set_expand(XFCE_PANEL_PLUGIN (plugin), plugin->expand);
+	gtk_widget_set_hexpand(GTK_WIDGET (plugin), plugin->expand);
+	gtk_widget_set_hexpand(plugin->label, plugin->expand);
+	gtk_label_set_xalign(GTK_LABEL(plugin->label), plugin->expand? 0.5: 0.0);
 }
 
 //////////////////////
@@ -137,6 +141,7 @@ static void wintitle_plugin_construct(XfcePanelPlugin *panel_plugin) {
 	                                    {"spacing", G_TYPE_UINT},
 	                                    {"use-mini-icon", G_TYPE_BOOLEAN},
 	                                    {"show-icon", G_TYPE_BOOLEAN},
+	                                    {"expand", G_TYPE_BOOLEAN},
 	                                    {NULL}};
 
 	xfce_panel_plugin_menu_show_configure(XFCE_PANEL_PLUGIN(plugin));
@@ -202,7 +207,8 @@ static void wintitle_plugin_set_property(GObject *object, guint prop_id, const G
 		wintitle_plugin_update_window_icon(plugin);
 		break;
 	case PROP_EXPAND:
-		xfce_panel_plugin_set_expand(XFCE_PANEL_PLUGIN (plugin), plugin->expand = g_value_get_boolean(value));
+		plugin->expand = g_value_get_boolean(value);
+		wintitle_plugin_update_expand(plugin);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
