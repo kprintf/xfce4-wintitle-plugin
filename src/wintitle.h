@@ -28,6 +28,7 @@
 
 #define DEFAULT_USE_MINI_ICON FALSE
 #define DEFAULT_SHOW_ICON TRUE
+#define DEFAULT_EXPAND FALSE
 
 #include <common/panel-private.h>
 #include <common/panel-utils.h>

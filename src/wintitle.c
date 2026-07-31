@@ -18,7 +18,7 @@
 #include "wintitle-dialogs.h"
 #include "wintitle.h"
 
-enum { PROP_0, PROP_TITLE_MAX_CHARS, PROP_SPACING, PROP_USE_MINI_ICON, PROP_SHOW_ICON };
+enum { PROP_0, PROP_TITLE_MAX_CHARS, PROP_SPACING, PROP_USE_MINI_ICON, PROP_SHOW_ICON, PROP_EXPAND };
 
 struct _WintitlePluginClass {
 	XfcePanelPluginClass __parent__;
@@ -32,6 +32,7 @@ struct _WintitlePlugin {
 	guint spacing;
 	gboolean use_mini_icon;
 	gboolean show_icon;
+	gboolean expand;
 
 	// Widgets and Informations
 	GtkWidget *box;
@@ -170,6 +171,9 @@ static void wintitle_plugin_get_property(GObject *object, guint prop_id, GValue 
 	case PROP_SHOW_ICON:
 		g_value_set_boolean(value, plugin->show_icon);
 		break;
+	case PROP_EXPAND:
+		g_value_set_boolean(value, plugin->expand);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
 	}
@@ -194,6 +198,9 @@ static void wintitle_plugin_set_property(GObject *object, guint prop_id, const G
 		plugin->show_icon = g_value_get_boolean(value);
 		wintitle_plugin_update_window_icon(plugin);
 		break;
+	case PROP_EXPAND:
+		xfce_panel_plugin_set_expand(XFCE_PANEL_PLUGIN (plugin), plugin->expand = g_value_get_boolean(value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
 	}
@@ -205,6 +212,7 @@ static void wintitle_plugin_init(WintitlePlugin *plugin) {
 	plugin->spacing = DEFAULT_SPACING;
 	plugin->use_mini_icon = DEFAULT_USE_MINI_ICON;
 	plugin->show_icon = DEFAULT_SHOW_ICON;
+	plugin->expand = DEFAULT_EXPAND;
 
 	plugin->box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, plugin->spacing);
 	plugin->icon = gtk_image_new();
@@ -254,5 +262,8 @@ static void wintitle_plugin_class_init(WintitlePluginClass *class) {
 	                                                     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 	g_object_class_install_property(gobject_class, PROP_SHOW_ICON,
 	                                g_param_spec_boolean("show-icon", NULL, NULL, DEFAULT_SHOW_ICON, //
+	                                                     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+	g_object_class_install_property(gobject_class, PROP_EXPAND,
+	                                g_param_spec_boolean("expand", NULL, NULL, DEFAULT_EXPAND, //
 	                                                     G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 }
