@@ -82,6 +82,9 @@ static void wintitle_plugin_update_orientation(WintitlePlugin *plugin, GtkOrient
 		gtk_orientable_set_orientation(GTK_ORIENTABLE(plugin->box), orientation);
 		gtk_label_set_angle(GTK_LABEL(plugin->label), 270);
 	}
+	if (plugin->expand) {
+		gtk_label_set_justify(GTK_LABEL(plugin->label), GTK_JUSTIFY_CENTER);
+	}
 }
 
 //////////////////////
