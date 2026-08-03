@@ -74,6 +74,10 @@ static void wintitle_plugin_screen_position_changed(WintitlePlugin *plugin, Xfce
 	wintitle_plugin_recalc_align(plugin);
 }
 
+static void wintitle_plugin_size_allocate(GtkWidget *unused, GtkAllocation* allocation, gpointer plugin) {
+	wintitle_plugin_recalc_align((WintitlePlugin*)(plugin));
+}
+
 static void wintitle_plugin_update_window_title(WintitlePlugin *plugin) {
 	if (!plugin->window || !WNCK_IS_WINDOW(plugin->window)) {
 		gtk_label_set_text(GTK_LABEL(plugin->label), "");
@@ -276,6 +280,7 @@ static void wintitle_plugin_init(WintitlePlugin *plugin) {
 	                 G_CALLBACK(wintitle_plugin_active_window_changed), plugin);
 	g_signal_connect(plugin, "size-changed", G_CALLBACK(wintitle_plugin_size_changed), plugin);
 	g_signal_connect(plugin, "screen-position-changed", G_CALLBACK(wintitle_plugin_screen_position_changed), plugin);
+	g_signal_connect(GTK_WIDGET(plugin->label), "size-allocate", G_CALLBACK(wintitle_plugin_size_allocate), plugin);
 }
 
 static void wintitle_plugin_class_init(WintitlePluginClass *class) {
