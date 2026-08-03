@@ -48,6 +48,28 @@ XFCE_PANEL_DEFINE_PLUGIN(WintitlePlugin, wintitle_plugin);
 ///////////////////
 // STATE UPDATES //
 ///////////////////
+
+static void wintitle_plugin_recalc_align(WintitlePlugin *plugin) {
+	if (!plugin->expand) {
+		return;
+	}
+	// XXX vertical mode (who cares?)
+	GtkAllocation total, box, label;
+	gtk_widget_get_allocation(gtk_widget_get_parent(GTK_WIDGET(plugin)), &total);
+	gtk_widget_get_allocation(GTK_WIDGET(plugin), &box);
+	gtk_widget_get_allocation(plugin->label, &label);
+	gtk_label_set_xalign(GTK_LABEL(plugin->label), 0.5f * (total.width - label.width - box.x) / (box.width - label.width));
+}
+
+static gboolean wintitle_plugin_size_changed(WintitlePlugin *plugin, gint unused) {
+	wintitle_plugin_recalc_align(plugin);
+	return FALSE;
+}
+
+static void wintitle_plugin_screen_position_changed(WintitlePlugin *plugin, XfceScreenPosition unused) {
+	wintitle_plugin_recalc_align(plugin);
+}
+
 static void wintitle_plugin_update_window_title(WintitlePlugin *plugin) {
 	if (!plugin->window || !WNCK_IS_WINDOW(plugin->window)) {
 		gtk_label_set_text(GTK_LABEL(plugin->label), "");
@@ -88,7 +110,7 @@ static void wintitle_plugin_update_expand(WintitlePlugin *plugin) {
 	xfce_panel_plugin_set_expand(XFCE_PANEL_PLUGIN (plugin), plugin->expand);
 	gtk_widget_set_hexpand(GTK_WIDGET (plugin), plugin->expand);
 	gtk_widget_set_hexpand(plugin->label, plugin->expand);
-	gtk_label_set_xalign(GTK_LABEL(plugin->label), plugin->expand? 0.5: 0.0);
+	wintitle_plugin_recalc_align(plugin);
 }
 
 //////////////////////
@@ -97,10 +119,12 @@ static void wintitle_plugin_update_expand(WintitlePlugin *plugin) {
 static void wintitle_plugin_orientation_changed(XfcePanelPlugin *panel_plugin, GtkOrientation orientation) {
 	WintitlePlugin *plugin = XFCE_WINTITLE_PLUGIN(panel_plugin);
 	wintitle_plugin_update_orientation(plugin, orientation);
+	wintitle_plugin_recalc_align(plugin);
 }
 
 static void wintitle_plugin_window_name_changed(WnckWindow *window, WintitlePlugin *plugin) {
 	wintitle_plugin_update_window_title(plugin);
+	wintitle_plugin_recalc_align(plugin);
 }
 
 static void wintitle_plugin_window_icon_changed(WnckWindow *window, WintitlePlugin *plugin) {
@@ -245,6 +269,8 @@ static void wintitle_plugin_init(WintitlePlugin *plugin) {
 
 	g_signal_connect(G_OBJECT(plugin->screen), "active-window-changed",
 	                 G_CALLBACK(wintitle_plugin_active_window_changed), plugin);
+	g_signal_connect(plugin, "size-changed", G_CALLBACK(wintitle_plugin_size_changed), plugin);
+	g_signal_connect(plugin, "screen-position-changed", G_CALLBACK(wintitle_plugin_screen_position_changed), plugin);
 }
 
 static void wintitle_plugin_class_init(WintitlePluginClass *class) {
