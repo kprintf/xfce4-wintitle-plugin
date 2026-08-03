@@ -131,7 +131,7 @@ void wintitle_plugin_configure(XfcePanelPlugin *panel_plugin) {
 	GtkWidget *expand_switch = gtk_switch_new();
 	gboolean expand =
 	    wintitle_plugin_bind_switch_value_to(GTK_SWITCH(expand_switch), G_OBJECT(plugin), "expand");
-	label = gtk_label_new("Expand");
+	label = gtk_label_new("Expand & center");
 	gtk_label_set_xalign(GTK_LABEL(label), 0);
 	gtk_grid_attach(GTK_GRID(grid), label, 0, 4, 1, 1);
 	gtk_grid_attach(GTK_GRID(grid), expand_switch, 1, 4, 1, 1);
