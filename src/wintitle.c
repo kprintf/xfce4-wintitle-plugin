@@ -54,11 +54,11 @@ static void wintitle_plugin_recalc_align(WintitlePlugin *plugin) {
 		return;
 	}
 	// XXX vertical mode (who cares?)
-	GtkAllocation total, box, label;
-	gtk_widget_get_allocation(gtk_widget_get_parent(GTK_WIDGET(plugin)), &total);
-	gtk_widget_get_allocation(GTK_WIDGET(plugin), &box);
+	GtkAllocation panel, label, layout;
+	gtk_widget_get_allocation(gtk_widget_get_parent(GTK_WIDGET(plugin)), &panel);
 	gtk_widget_get_allocation(plugin->label, &label);
-	gtk_label_set_xalign(GTK_LABEL(plugin->label), 0.5f * (total.width - label.width - box.x) / (box.width - label.width));
+	pango_layout_get_pixel_size(gtk_label_get_layout(GTK_LABEL(plugin->label)), &layout.width, &layout.height);
+	gtk_label_set_xalign(GTK_LABEL(plugin->label), (0.5f * (panel.width - layout.width) - label.x) / (label.width - layout.width));
 }
 
 static gboolean wintitle_plugin_size_changed(WintitlePlugin *plugin, gint unused) {
@@ -76,6 +76,7 @@ static void wintitle_plugin_update_window_title(WintitlePlugin *plugin) {
 		return;
 	}
 	gtk_label_set_text(GTK_LABEL(plugin->label), wnck_window_get_name(plugin->window));
+	wintitle_plugin_recalc_align(plugin);
 }
 
 static void wintitle_plugin_update_window_icon(WintitlePlugin *plugin) {
