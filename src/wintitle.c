@@ -53,12 +53,16 @@ static void wintitle_plugin_recalc_align(WintitlePlugin *plugin) {
 	if (!plugin->expand) {
 		return;
 	}
-	// XXX vertical mode (who cares?)
 	GtkAllocation panel, label, layout;
 	gtk_widget_get_allocation(gtk_widget_get_parent(GTK_WIDGET(plugin)), &panel);
 	gtk_widget_get_allocation(plugin->label, &label);
 	pango_layout_get_pixel_size(gtk_label_get_layout(GTK_LABEL(plugin->label)), &layout.width, &layout.height);
-	gtk_label_set_xalign(GTK_LABEL(plugin->label), (0.5f * (panel.width - layout.width) - label.x) / (label.width - layout.width));
+	if (label.width != layout.width) {
+		gtk_label_set_xalign(GTK_LABEL(plugin->label), (0.5f * (panel.width - layout.width) - label.x) / (label.width - layout.width));
+	}
+	if (label.height != layout.height) {
+		gtk_label_set_yalign(GTK_LABEL(plugin->label), (0.5f * (panel.height - layout.height) - label.y) / (label.height - layout.height));
+	}
 }
 
 static gboolean wintitle_plugin_size_changed(WintitlePlugin *plugin, gint unused) {
